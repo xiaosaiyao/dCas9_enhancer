@@ -1,0 +1,10 @@
+	condition	cell
+gain_ctrl_1	Ctrl	786O
+gain_ctrl_2	Ctrl	786O
+gain_ctrl_3	Ctrl	786O
+krab_gain_a498_1	A498	A498
+krab_gain_a498_2	A498	A498
+krab_gain_a498_3	A498	A498
+krab_gain_786o_1	786O	786O
+krab_gain_786o_2	786O	786O
+krab_gain_786o_3	786O	786O
