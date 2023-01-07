@@ -211,6 +211,7 @@ write.table(O786_rld.sig, "results/O786_rld.sig.txt", quote = FALSE, row.names =
 
 O786.sig.bed <- do.call(rbind, lapply(O786_rld.sig$enhancerID, function(x){
         unlist(strsplit(x, split = "_"))}))
+
 write.table(O786.sig.bed, "results/O786.sig.bed", quote = FALSE, row.names = FALSE, col.names = FALSE)
 
 # Intersect regions that are significant in both A498 and 786O
@@ -218,6 +219,9 @@ write.table(O786.sig.bed, "results/O786.sig.bed", quote = FALSE, row.names = FAL
 overlap_euler_regions <- eulerr::euler(combinations = list(
         O786 = O786_rld.sig$enhancerID,
         A498 = A498_rld.sig$enhancerID))
+
+sig_gRNA <- sort(intersect(O786_rld.sig$enhancerID, A498_rld.sig$enhancerID))
+write.table(sig_gRNA, "results/sig.gRNA.A498.786O.txt", quote = FALSE, row.names = FALSE, col.names = FALSE)
 
 pdf("figures/venn.regions.gRNA.overlap.pdf", height =3, width = 3)
 plot(overlap_euler_regions, quantities = list(type = c( "counts")))
@@ -228,6 +232,11 @@ overlap_euler_enhancers <- eulerr::euler(combinations = list(
         O786 = unique(O786.sig.bed[,4]),
         A498 = unique(A498.sig.bed[,4])))
 
+sig_enhancers <- sort(intersect(unique(O786.sig.bed[,4]), unique(A498.sig.bed[,4])))
+
+write.table(sig_enhancers, "results/sig.enhancers.A498.786O.txt")
+
+
 pdf("figures/venn.enhancers.overlap.pdf", height =3, width = 3)
 plot(overlap_euler_enhancers, quantities = list(type = c( "counts")))
 dev.off()
@@ -237,6 +246,8 @@ dev.off()
 O786_sig_genes <- unique(c(O786_rld.sig$gene1, O786_rld.sig$gene2))
 A498_sig_genes <- unique(c(A498_rld.sig$gene1, A498_rld.sig$gene2))
 sig_genes <- sort(intersect(O786_sig_genes, A498_sig_genes))
+
+write.table(sig_genes, "results/sig.genes.A498.786O.txt")
 
 overlap_euler <- eulerr::euler(combinations = list(
         O786 = O786_sig_genes,
