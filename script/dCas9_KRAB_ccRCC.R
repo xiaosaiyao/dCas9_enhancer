@@ -236,7 +236,7 @@ sig_enhancers <- sort(intersect(unique(O786.sig.bed[,4]), unique(A498.sig.bed[,4
 
 whole_regions <- read.table("/Users/abc/Desktop/ASTAR/Projects/RCC enhancer/Data Analysis/Regions/Differential Regions/K27ac_enhancer.5Gain.short.txt")
 sig_enhancers <- whole_regions[match(sig_enhancers, whole_regions [,4]),]
-write.table(sig_enhancers, "results/sig.enhancers.A498.786O.txt",  quote = FALSE, row.names = FALSE, col.names = FALSE)
+write.table(sig_enhancers, "results/sig.enhancers.A498.786O.txt",  quote = FALSE, row.names = FALSE, col.names = FALSE, sep = "\t")
 
 
 pdf("figures/venn.enhancers.overlap.pdf", height =3, width = 3)
@@ -247,8 +247,12 @@ dev.off()
 
 O786_sig_genes <- unique(c(O786_rld.sig$gene1, O786_rld.sig$gene2))
 A498_sig_genes <- unique(c(A498_rld.sig$gene1, A498_rld.sig$gene2))
-sig_genes <- sort(intersect(O786_sig_genes, A498_sig_genes))
 
+overlap <- intersect(O786_sig_genes, A498_sig_genes)
+all_sig_genes <- c(O786_rld.sig$gene1, O786_rld.sig$gene2, A498_rld.sig$gene1, A498_rld.sig$gene2)
+all_sig_genes <- all_sig_genes[all_sig_genes %in% overlap]
+sig_genes <- sort(table(all_sig_genes), decreasing = TRUE)
+sig_genes <- data.frame(sig_genes)
 write.table(sig_genes, "results/sig.genes.A498.786O.txt",  quote = FALSE, row.names = FALSE, col.names = FALSE)
 
 overlap_euler <- eulerr::euler(combinations = list(
