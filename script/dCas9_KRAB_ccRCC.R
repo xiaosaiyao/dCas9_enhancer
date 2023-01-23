@@ -26,6 +26,15 @@ A498_dds <- DESeqDataSetFromMatrix(countData = A498_matrix,
 
 
 A498_dds <- DESeq(A498_dds, fitType="local")
+A498_dds <- estimateSizeFactors(A498_dds)
+A498_par <- estimateDispersions(A498_dds, fitType = "parametric")
+A498_loc <- estimateDispersions(A498_dds, fitType = "local")
+plotDispEsts(A498_par, main= "dispEst: parametric")
+plotDispEsts(A498_loc, main= "dispEst: local")
+A498_par_residual <- median(abs(mcols(A498_par)$dispGeneEst - mcols(A498_par)$dispFit))
+A498_loc_residual <- median(abs(mcols(A498_loc)$dispGeneEst - mcols(A498_loc)$dispFit))
+
+
 A498_res <- results(A498_dds, contrast=c("condition","krab","Ctrl"))
 
 length(which(A498_res$pvalue <0.05 & A498_res$log2FoldChange <0)) #479/12330
@@ -97,7 +106,17 @@ O786_dds <- DESeqDataSetFromMatrix(countData = O786_matrix,
                               colData = batch,
                               design = ~ condition)
 
+O786_dds <- estimateSizeFactors(O786_dds)
+O786_par <- estimateDispersions(O786_dds, fitType = "parametric")
+O786_loc <- estimateDispersions(O786_dds, fitType = "local")
+plotDispEsts(O786_par, main= "dispEst: parametric")
+plotDispEsts(O786_loc, main= "dispEst: local")
+O786_par_residual <- median(abs(mcols(O786_par)$dispGeneEst - mcols(O786_par)$dispFit),na.rm = TRUE)
+# 0.1889291
+O786_loc_residual <- median(abs(mcols(O786_loc)$dispGeneEst - mcols(O786_loc)$dispFit),na.rm = TRUE)
+# 0.1341235
 
+# Choose local because residual was smaller
 
 
 O786_dds <- DESeq(O786_dds, fitType="local")
@@ -248,12 +267,14 @@ dev.off()
 O786_sig_genes <- unique(c(O786_rld.sig$gene1, O786_rld.sig$gene2))
 A498_sig_genes <- unique(c(A498_rld.sig$gene1, A498_rld.sig$gene2))
 
-overlap <- intersect(O786_sig_genes, A498_sig_genes)
+overlap <- na.omit(intersect(O786_sig_genes, A498_sig_genes))
 all_sig_genes <- c(O786_rld.sig$gene1, O786_rld.sig$gene2, A498_rld.sig$gene1, A498_rld.sig$gene2)
 all_sig_genes <- all_sig_genes[all_sig_genes %in% overlap]
 sig_genes <- sort(table(all_sig_genes), decreasing = TRUE)
 sig_genes <- data.frame(sig_genes)
-write.table(sig_genes, "results/sig.genes.A498.786O.txt",  quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+overlap[!overlap %in% sig_genes$all_sig_genes]
+write.table(sig_genes, "results/sig.genes.A498.786O.txt",  quote = FALSE, row.names = FALSE, col.names = FALSE, sep = "\t")
 
 overlap_euler <- eulerr::euler(combinations = list(
         O786 = O786_sig_genes,
