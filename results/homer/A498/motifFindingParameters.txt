@@ -1,0 +1,1 @@
+cmd = ../results/A498.sig.bed hg19 ../results/homer/A498/ -size given

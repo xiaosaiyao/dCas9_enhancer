@@ -1,0 +1,1 @@
+cmd = ../results/sig.enhancers.A498.786O.txt hg19 ../results/homer/both_2/ -size given
